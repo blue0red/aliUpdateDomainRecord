@@ -1,7 +1,9 @@
 package com.aliyun.utils;
 
+import java.io.File;
+
 /**
- * Created by Administrator on 2016/7/6.
+ * Created by yangf on 2016/7/6.
  */
 public class PathUtil {
     public static final String CLASS_PATH = getClassPath();
@@ -19,10 +21,10 @@ public class PathUtil {
     public static final String LOGO_ICO = getRelativePath() + "logo.png";
 
     public static  String getClassPath(){
-        //打包后时候该路径
-        String path = System.getProperty("java.class.path");
-        //idea上测试使用该路径
-//        String path = new File("aliUpdateDomainRecord").getAbsolutePath();
+        //打包后使用该路径
+//        String path = System.getProperty("java.class.path");
+        //开发测试使用该路径
+        String path = new File("aliUpdateDomainRecord").getAbsolutePath();
         return path;
     }
 

@@ -20,7 +20,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.aliyun.swing.MyFrame</mainClass>
+                            <mainClass>com.aliyun.start.MyFrame</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

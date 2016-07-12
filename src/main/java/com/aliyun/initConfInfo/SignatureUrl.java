@@ -46,7 +46,7 @@ public class SignatureUrl {
             //获得含有签名的字符串
             signAfterUrl =  signBeforeUrl + "&Signature=" +  URLEncoder.encode(signature,"UTF-8");
         } catch (UnsupportedEncodingException e) {
-            FileUtil.writeErrToLog(getNow() + "[ Signature code failure ]:" + signature + "\n[ error message ]:" , e.getMessage());
+            FileUtil.writeErrToLog(e, getNow() + "[ Signature code failure ]:" + signature + "\n[ error message ]:");
         }finally {
             return signAfterUrl;
         }

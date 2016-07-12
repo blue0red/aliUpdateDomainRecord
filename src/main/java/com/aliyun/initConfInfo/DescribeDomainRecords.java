@@ -53,7 +53,7 @@ public class DescribeDomainRecords {
             //将record信息列表输出到文件
             Map<String, String> propMap = new HashMap<String, String>();
             FileUtil propertiesUtil = new FileUtil();
-            FileUtil.writeToLog(Color.blue, "please option record by you want update! copy to [ record.properties ]\n");
+            FileUtil.writeToLog(null, Color.blue, "please option record by you want update! copy to [ record.properties ]\n");
             for (int i = 0; i < recordList.size(); i++) {
                 FileUtil.writeSuccessToLog("Record" + i + "=" + recordList.get(i) + "\n");propMap.put("Record" + i, recordList.get(i));
             }
@@ -63,7 +63,7 @@ public class DescribeDomainRecords {
             }
             return true;
         } catch (IOException e) {
-            FileUtil.writeErrToLog(getNow() + "[ load fail by" + PathUtil.CONF_FILE + " ]\n",
+            FileUtil.writeErrToLog(e, getNow() + "[ load fail by" + PathUtil.CONF_FILE + " ]\n",
                 e.getMessage());
             return false;
         }
@@ -88,21 +88,21 @@ public class DescribeDomainRecords {
                 recordJsonStr.add(record.toString());
             }
         } catch (IOException e) {
-            FileUtil.writeErrToLog(getNow() + "[ "+key + ":" + CONF_MAP.get(key)+" ]Error Json--", str,
-                "[ error message ]:" + e.getMessage());
+            FileUtil.writeErrToLog(e, getNow() + "[ "+key + ":" + CONF_MAP.get(key)+" ]Error Json--", str,
+                "[ error message ]:" );
         } finally {
             return recordJsonStr;
         }
     }
     //请求经过处理的url拿到返回包含所有记录的json字符串
-    public static String getUrlResult(String httpUrl) {
+    public static String getUrlResult(String... httpUrl) {
         BufferedReader reader = null;
         String resultStr = "";
         CloseableHttpClient httpclient = HttpClients.createDefault();
         try {
-            URL url = new URL(httpUrl);
+            URL url = new URL(httpUrl[0]);
             // 创建httpget.
-            HttpGet httpget = new HttpGet(httpUrl);
+            HttpGet httpget = new HttpGet(httpUrl[0]);
             // 执行get请求.
             CloseableHttpResponse response = httpclient.execute(httpget);
             HttpEntity entity = response.getEntity();
@@ -111,8 +111,8 @@ public class DescribeDomainRecords {
                 resultStr = EntityUtils.toString(entity);
             }
         } catch (IOException e) {
-            e.printStackTrace();
-            FileUtil.writeErrToLog(getNow() + "[ Site access exception, error message]:", e.getMessage());
+            if(httpUrl.length <= 1)
+            FileUtil.writeErrToLog(e, getNow() + "[ Site access exception, error message]:");
         } finally {
             return resultStr;
         }

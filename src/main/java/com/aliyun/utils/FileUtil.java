@@ -8,8 +8,8 @@ import java.util.Map;
 import java.util.Properties;
 
 import static com.aliyun.settingJob.UpdateDomainRecordJob.count;
-import static com.aliyun.swing.MyFrame.insertDocument;
-import static com.aliyun.swing.MyFrame.textPane;
+import static com.aliyun.start.MyFrame.insertDocument;
+import static com.aliyun.start.MyFrame.textPane;
 import static com.aliyun.utils.PathUtil.CONF_FILE;
 import static com.aliyun.utils.PathUtil.LOG_FILE;
 
@@ -19,7 +19,7 @@ import static com.aliyun.utils.PathUtil.LOG_FILE;
 public class FileUtil {
 
     //根据Key读取Value
-    public String GetValueByKey(String key) {
+    public synchronized String getValue(String key) {
         Properties pps = new Properties();
         try {
             InputStream in = new BufferedInputStream(new FileInputStream(CONF_FILE));
@@ -39,7 +39,7 @@ public class FileUtil {
         WriteProperties(propMap, fileName);
     }
 
-        //写入Properties信息
+    //写入Properties信息
     public void WriteProperties(Map<String, String> propMap, String fileName) throws IOException {
         Properties pps = new Properties();
         File file = new File(fileName);
@@ -56,7 +56,7 @@ public class FileUtil {
         pps.putAll(propMap);
         //以适合使用 load 方法加载到 Properties 表中的格式，
         //将此 Properties 表中的属性列表（键和元素对）写入输出流
-        pps.store(os, "ddd" );
+        pps.store(os, "ddd");
     }
 
     //读取Properties的全部信息
@@ -73,40 +73,54 @@ public class FileUtil {
         }
         return propMap;
     }
+
     //错误日志
-    public static void writeErrToLog(String... logInfo) {
-        writeToLog(Color.red,logInfo);
+    public static void writeErrToLog(Throwable e, String... logInfo) {
+        writeToLog(e, Color.red, logInfo);
     }
 
     //成功信息
     public static void writeSuccessToLog(String... logInfo) {
-        writeToLog(Color.green,logInfo);
+        Throwable e = null;
+        writeToLog(e, Color.green, logInfo);
     }
 
 
     //写入到log文件
-    public synchronized static void writeToLog(Color color, String... logInfo) {
+    public synchronized static void writeToLog(Throwable e, Color color, String... logInfo) {
         //每写入20次清理一次界面
         count++;
-        if(count%20 == 0){
+        if (count == 20) {
             textPane.setText("");
+            count = 0;
+        }
+        ByteArrayOutputStream buf = null;
+        String expMessage = "";
+        if (e != null) {
+            buf = new java.io.ByteArrayOutputStream();
+            e.printStackTrace(new java.io.PrintWriter(buf, true));
+            expMessage = buf.toString();
         }
         File file = new File(LOG_FILE);
-        FileWriter  fw = null;
+        FileWriter fw = null;
         PrintWriter pw = null;
-        for (String log:logInfo) {
+        for (String log : logInfo) {
             insertDocument(log, color);
         }
-            try {
+        if (!"".equals(expMessage))
+            insertDocument(expMessage, color);
+        try {
             if (!file.exists()) {
                 file.createNewFile();
             }
-            fw = new FileWriter(file,true);
+            fw = new FileWriter(file, true);
             pw = new PrintWriter(fw);
-            for (String log:logInfo){
+            for (String log : logInfo) {
                 pw.println(log);
             }
-        } catch (IOException e) {
+            if (!"".equals(expMessage))
+                pw.println(expMessage);
+        } catch (IOException e1) {
             e.printStackTrace();
         } finally {
             try {
@@ -116,7 +130,9 @@ public class FileUtil {
                 pw.flush();
                 if (pw != null)
                     pw.close();
-            } catch (IOException e) {
+                if (buf != null)
+                    buf.close();
+            } catch (IOException e1) {
                 e.printStackTrace();
             }
         }

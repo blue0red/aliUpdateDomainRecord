@@ -4,22 +4,29 @@ import java.net.InetAddress;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.aliyun.initConfInfo.AnalyzeConf.CONF_MAP;
+import static com.aliyun.initConfInfo.AnalyzeConf.URL_LIST;
 import static com.aliyun.initConfInfo.DescribeDomainRecords.getUrlResult;
 
 public class GetPublicIP {
 
     public String getWebIp() {
         //用来获取ip的网站
-        String strUrl = CONF_MAP.get("getIpUrl");
-        String ip = getUrlResult(strUrl);
-        String regEx = "([0-9]{1,3}[.]{1}){3}[0-9]{1,3}";
-        Pattern pat = Pattern.compile(regEx);
-        Matcher mat = pat.matcher(ip);
-        while (mat.find()) {
-            return mat.group();
+        String ip = "";
+        for (int i = 0; i < URL_LIST.size(); i++) {
+            String url = URL_LIST.get(i);
+            System.out.println(url);
+            String resultIp = getUrlResult(url, "ip");
+            String regEx = "([0-9]{1,3}[.]{1}){3}[0-9]{1,3}";
+            Pattern pat = Pattern.compile(regEx);
+            Matcher mat = pat.matcher(resultIp);
+            while (mat.find()) {
+                ip = mat.group();
+            }
+            if (ip != null && !("".equals(ip))) {
+                break;
+            }
         }
-        return "";
+        return ip;
     }
 
     public void getIp() {

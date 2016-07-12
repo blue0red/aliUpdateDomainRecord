@@ -1,4 +1,4 @@
-package com.aliyun.swing;
+package com.aliyun.start;
 
 import com.aliyun.initConfInfo.DescribeDomainRecords;
 import com.aliyun.settingJob.UpdateDomainRecordJob;
@@ -39,7 +39,7 @@ public class MyFrame extends JFrame {
 
     public static void main(String[] args) {
         System.out.println(Arrays.toString(args));
-        if (args.length != 0 && "star".equals(args[0])) {
+        if (args.length != 0 && "start".equals(args[0])) {
             DescribeDomainRecords ddr = new DescribeDomainRecords();
             if (!ddr.execute()) {
                 return;
@@ -90,11 +90,11 @@ public class MyFrame extends JFrame {
             trayIcon = new TrayIcon(image);
             systemTray.add(trayIcon);//设置托盘的图标
         } catch (IOException e) {
-            writeErrToLog(
-                getNow() + "[ path load fail ]: please check ( PathUtil.LOGO_ICO )", e.getMessage());
+            writeErrToLog(e,
+                getNow() + "[ path load fail ]: please check ( PathUtil.LOGO_ICO )");
         } catch (AWTException e) {
-            writeErrToLog(
-                getNow() + "[ path load fail ]: please check ( PathUtil.LOGO_ICO )", e.getMessage());
+            writeErrToLog(e,
+                getNow() + "[ path load fail ]: please check ( PathUtil.LOGO_ICO )");
         }
 
         addWindowListener(new WindowAdapter() {
@@ -109,7 +109,7 @@ public class MyFrame extends JFrame {
                 try {
                     removeJob(jobKey, triggerKey);
                 } catch (SchedulerException e1) {
-                    writeErrToLog(getNow() + "[ remove job fail ]: ", e1.getMessage());
+                    writeErrToLog(e1, getNow() + "[ remove job fail ]: ", e1.getMessage());
                 }finally {
                     System.exit(0);
                 }

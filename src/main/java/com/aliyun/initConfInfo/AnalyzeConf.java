@@ -21,10 +21,18 @@ import static com.aliyun.utils.UTCTimeUtil.getNow;
 public class AnalyzeConf {
     public static ConcurrentMap<String, String> CONF_MAP = new ConcurrentHashMap<String, String>();
 
+    public static List<String> URL_LIST = new ArrayList<String>();
+
     //读取Properties的全部信息
     public static void loadConf() throws IOException {
         Map<String, String> confMap = getAllProperties(PathUtil.CONF_FILE);
         CONF_MAP.putAll(confMap);
+        Set<String> keySet = CONF_MAP.keySet();
+        for(String key:keySet){
+            if(key.indexOf("getIpUrl") > -1){
+                URL_LIST.add(CONF_MAP.get(key));
+            }
+        }
     }
 
     public static List<Record> loadUpdateRecord(){
@@ -34,7 +42,7 @@ public class AnalyzeConf {
         try {
             recordMap = getAllProperties(PathUtil.RECORD_FILE);
         } catch (IOException e) {
-            FileUtil.writeErrToLog(getNow() + "[ load failure by ]:" + PathUtil.RECORD_FILE + "\n[ error message ]:" ,e.getMessage());
+            FileUtil.writeErrToLog(e, getNow() + "[ load failure by ]:" + PathUtil.RECORD_FILE + "\n[ error message ]:");
         }
         ObjectMapper mapper = new ObjectMapper();
         Set<String> keySet = recordMap.keySet();

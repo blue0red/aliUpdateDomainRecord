@@ -38,7 +38,7 @@ public class UpdateDomainRecordJob implements Job {
         }
         //首次更新ip
         if("".equals(WEB_IP)){
-            FileUtil.writeToLog(Color.BLUE, "First update! ip same as old, Don't care.");
+            FileUtil.writeToLog(null, Color.BLUE, "First update! ip same as old, Don't care.");
         }
 
         //IP变化时更新ip
@@ -61,7 +61,7 @@ public class UpdateDomainRecordJob implements Job {
             try {
                 updateResult = mapper.readValue(result, UpdateResult.class);
                 if(updateResult.getMessage() != null){
-                    FileUtil.writeErrToLog(getNow() + "[ record update fail ]:"
+                    FileUtil.writeErrToLog(null, getNow() + "[ record update fail ]:"
                         ,"HostID: "+ updateResult.getHostId()
                         ,"Code: " + updateResult.getCode()
                         ,"ErrorMessage: "+ updateResult.getMessage());
@@ -69,7 +69,7 @@ public class UpdateDomainRecordJob implements Job {
                     FileUtil.writeSuccessToLog(getNow() + "[ record update success ]: Domain - " + record.getValue()+ " RecordId - " + record.getRecordId());
                 }
             } catch (IOException e) {
-                FileUtil.writeErrToLog(getNow() + "[ record update success ]:", record.toString(), e.getMessage());
+                FileUtil.writeErrToLog(e, getNow() + "[ record update success ]:", record.toString(), e.getMessage());
             }
         }
     }
