@@ -60,8 +60,12 @@ public final class UTCTimeUtil {
     }
 
     public static String getNow(){
-        SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd-hh:mm:ss");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd-HH:mm:ss");
         String now = format.format(new Date());
         return now;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(getNow());
     }
 }
